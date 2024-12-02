@@ -64,7 +64,6 @@ async def main(province=None, city=None, kecamatan=None, kelurahan=None):
                             'Gambar Formulir Model C.Hasil-PPWP ke-1', 'Gambar Formulir Model C.Hasil-PPWP ke-2', 'Gambar Formulir Model C.Hasil-PPWP ke-3'
                         ]
 
-                        # Ambil data administrasi
                         administrative = tps_data.get('administrasi', {})
                         if administrative:
                             DPT = administrative.get('pemilih_dpt_j', "null")
@@ -75,17 +74,13 @@ async def main(province=None, city=None, kecamatan=None, kelurahan=None):
                             invalid_vote = administrative.get('suara_tidak_sah', "null")
                             total_vote = administrative.get('suara_total', "null")
                         else:
-                            # Jika administrasi tidak ada, tetapkan None untuk semua kolom
                             DPT, DPTb, DPK = "null", "null", "null"
                             valid_vote, invalid_vote, total_vote = "null", "null", "null"
 
-
-                        # Ambil data chart (data pasangan calon)
                         chart = tps_data.get('chart', {})
                         if chart:
                             pres_data = sum([0 if v is None else v for v in chart.values()])
 
-                            # Validasi apakah data pasangan calon sesuai dengan data suara valid dan total suara
                             if pres_data == valid_vote and valid_vote + invalid_vote == total_vote:
                                 paslon_1 = chart.get('100025', "null")
                                 paslon_2 = chart.get('100026', "null")
@@ -97,19 +92,16 @@ async def main(province=None, city=None, kecamatan=None, kelurahan=None):
                                 paslon_3 = chart.get('100027', "null")
                                 status = 'INVALID'
                         else:
-                            # Jika chart tidak ada, tetapkan None
                             paslon_1, paslon_2, paslon_3 = "null", "null", "null"
                             status = 'PROCESS'
 
-
-                        # Gambar Form C
                         images = tps_data.get('images', [])
                         image_keys = {}
                         if images:
                             tasks = []
                             for i, img in enumerate(images, start=1):
                                 key = f'Gambar Formulir Model C.Hasil-PPWP ke-{i}'
-                                image_keys[key] = img or "null"  # Tetapkan None jika gambar tidak valid
+                                image_keys[key] = img or "null"
                                 if img:
                                     cform_path = f"./formc/{province_name}/{city_name}/{kecamatan_name}/{kelurahan_name}/{tps_name}".replace(" ", "_")
                                     directory(cform_path)
@@ -117,13 +109,10 @@ async def main(province=None, city=None, kecamatan=None, kelurahan=None):
                                     tasks.append(task)
                             await asyncio.gather(*tasks)
                         else:
-                            # Jika tidak ada gambar, tambahkan kunci dengan None
-                            for i in range(1, 4):  # Misalnya, maksimal 3 gambar
+                            for i in range(1, 4):
                                 key = f'Gambar Formulir Model C.Hasil-PPWP ke-{i}'
                                 image_keys[key] = "null"
 
-                        # Data akhir untuk CSV
-                        # Data akhir untuk CSV
                         data = {
                             'ID Provinsi': province_code or "null",
                             'Nama Provinsi': province_name or "null",
@@ -145,7 +134,7 @@ async def main(province=None, city=None, kecamatan=None, kelurahan=None):
                             'Suara Tidak Sah': invalid_vote,
                             'Total Suara': total_vote,
                             'Status': status,
-                            **image_keys  # URL gambar dari Form C
+                            **image_keys
                         }
 
                         write_csv(file_name, data, fields)
