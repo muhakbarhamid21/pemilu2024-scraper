@@ -103,7 +103,8 @@ async def main(province=None, city=None, kecamatan=None, kelurahan=None):
                                 key = f'Gambar Formulir Model C.Hasil-PPWP ke-{i}'
                                 image_keys[key] = img or "null"
                                 if img:
-                                    cform_path = f"./formc/{province_name}/{city_name}/{kecamatan_name}/{kelurahan_name}/{tps_name}".replace(" ", "_")
+                                    #cform_path = f"./formc/{province_name}/{city_name}/{kecamatan_name}/{kelurahan_name}/{tps_name}".replace(" ", "_") berdasarkan TPS
+                                    cform_path = f"./formc/{province_name}".replace(" ", "_")
                                     directory(cform_path)
                                     task = asyncio.create_task(save_image(cform_path, img))
                                     tasks.append(task)
