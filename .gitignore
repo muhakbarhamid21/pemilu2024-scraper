@@ -91,5 +91,5 @@ profiler.log
 .DS_Store
 
 # Project-specific folders
-#datasets/
-#formc/
+datasets/
+formc/
