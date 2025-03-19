@@ -1,8 +1,7 @@
 import asyncio
 from kpu_api import KPU
 from file_utils import directory, save_image
-from csv_utils import write_csv
-
+from csv_utils import write_csv, sanitize_filename
 
 async def main(province=None, city=None, kecamatan=None, kelurahan=None):
     kpu = KPU()
@@ -41,8 +40,9 @@ async def main(province=None, city=None, kecamatan=None, kelurahan=None):
                         continue
                     cari_wilayah = True
 
-                    file_name = f"./datasets/{province_name}_{city_name}_{kecamatan_name}.csv"
-
+                    file_name = f"./datasets/{sanitize_filename(province_name)}/{sanitize_filename(province_name)}_{sanitize_filename(city_name)}_{sanitize_filename(kecamatan_name)}.csv"
+                    cform_path = f"./formc/{sanitize_filename(province_name)}"
+                                    
                     tps = (await kpu.get_tps(province_code, city_code, kecamatan_code, kelurahan_code))["contents"]
 
                     for v_tps in tps:
@@ -104,7 +104,6 @@ async def main(province=None, city=None, kecamatan=None, kelurahan=None):
                                 image_keys[key] = img or "null"
                                 if img:
                                     #cform_path = f"./formc/{province_name}/{city_name}/{kecamatan_name}/{kelurahan_name}/{tps_name}".replace(" ", "_") berdasarkan TPS
-                                    cform_path = f"./formc/{province_name}".replace(" ", "_")
                                     directory(cform_path)
                                     task = asyncio.create_task(save_image(cform_path, img))
                                     tasks.append(task)
@@ -142,7 +141,7 @@ async def main(province=None, city=None, kecamatan=None, kelurahan=None):
 
                         print(f"\n[{province_name} | {city_name} | {kecamatan_name} | {kelurahan_name} | {tps_name}] Data Disimpan!")
                         print(f"Data\t\t: {file_name}")
-                        print(f"Gambar Form C\t: ./formc/{province_name}/{city_name}/{kecamatan_name}/{kelurahan_name}/{tps_name}")
+                        print(f"Gambar Form C\t: {cform_path}")
                         
     return cari_wilayah
 
